@@ -6,7 +6,7 @@ config();
 const app = express();
 app.use(cors());
 
-app.get("/ping", (req, res) => {
+app.get("/ping", (_req, res) => {
   try {
     res.json({ message: ["pong"] });
   } catch (error) {
