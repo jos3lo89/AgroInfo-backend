@@ -38,3 +38,18 @@ export const usuarioSchemaRegistrarZ = z.object({
       message: "El clave no debe ser vacio",
     }),
 });
+
+export const usuarioLoginSchemaZ = z.object({
+  correo: z
+    .string({ required_error: "email requerido" })
+    .email({ message: "email invalido" })
+    .refine((email) => email.length >= 1, {
+      message: "El email no debe ser vacio",
+    }),
+  clave: z
+    .string({ required_error: "clave requerido" })
+    .min(6, { message: "clave minima de 6 caracteres" })
+    .refine((clave) => clave.length >= 1, {
+      message: "El clave no debe ser vacio",
+    }),
+});
