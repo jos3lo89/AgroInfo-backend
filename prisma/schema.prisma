@@ -12,3 +12,17 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+// Modelos
+model Usuarios {
+  id        String   @id @unique @db.VarChar(36)
+  usuario   String   @db.VarChar(20)
+  nombre    String   @db.VarChar(40)
+  apellido  String   @db.VarChar(50)
+  correo    String   @db.VarChar(30)
+  clave     String   @db.VarChar(110)
+  foto      String   @db.VarChar(40)
+  rol       String?  @default("publico") @db.VarChar(15)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
