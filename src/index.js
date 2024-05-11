@@ -1,7 +1,7 @@
-import app from "./config/app.js";
+// import app from "./config/app.js";
 import { PORT } from "./config/config.js";
 
-function severOn() {
+/* function severOn() {
   try {
     app.listen(PORT);
     console.log(`server on port ${PORT}`);
@@ -11,3 +11,14 @@ function severOn() {
 }
 
 severOn();
+ */
+
+
+import express from 'express';
+
+const app = express()
+app.use((_req, res) => {
+  res.status(404).json({message: ["Not Found"]})
+})
+
+app.listen(PORT, () => console.log("server on"))
