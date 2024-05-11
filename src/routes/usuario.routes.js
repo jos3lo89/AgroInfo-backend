@@ -125,7 +125,7 @@ router.post("/usuario/foto", authValidar, subirFoto, async (req, res) => {
     });
 
     res.json({
-      message: ["foto registrada"],
+      message: ["foto actualizada"],
       foto: `/uploads/${req.file.filename}`,
     });
   } catch (error) {
