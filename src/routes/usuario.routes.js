@@ -1,8 +1,9 @@
 import { Router } from "express";
-import prisma from "../config/db.js";
 import { v4 as uuid } from "uuid";
 import bcrypt from "bcryptjs";
 import * as fs from "node:fs/promises";
+
+import prisma from "../config/db.js";
 import {
   usuarioCorreoUnico,
   usuarioUserUnico,
