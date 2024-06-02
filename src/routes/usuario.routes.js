@@ -21,7 +21,7 @@ import { authValidar } from "../middlewares/authValidar.js";
 const router = Router();
 
 router.post(
-  "/usuario",
+  "/usuario/create",
   usuarioValidar(usuarioSchemaRegistrarZ),
   usuarioCorreoUnico,
   usuarioUserUnico,
@@ -110,9 +110,10 @@ router.post("/usuario/logout", authValidar, (_req, res) => {
   }
 });
 
-router.post("/usuario/foto", authValidar, subirFoto, async (req, res) => {
+router.post("/usuario/photo", authValidar, subirFoto, async (req, res) => {
   try {
     const { id } = req.user;
+    console.log(req.file);
 
     const userFound = await prisma.usuarios.findFirst({ where: { id } });
 
@@ -127,12 +128,87 @@ router.post("/usuario/foto", authValidar, subirFoto, async (req, res) => {
 
     res.json({
       message: ["foto actualizada"],
-      foto: `/uploads/${req.file.filename}`,
+      foto: `${URL_SERVER}/uploads/${req.file.filename}`,
     });
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: [error.message] });
   }
 });
+
+router.get("/usuario/get", authValidar, async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const userFound = await prisma.usuarios.findFirst({ where: { id } });
+
+    res.json({
+      id: userFound.id,
+      usuario: userFound.usuario,
+      nombre: userFound.nombre,
+      apellido: userFound.apellido,
+      correo: userFound.correo,
+      foto: `${URL_SERVER}${userFound.foto}`,
+      rol: userFound.rol,
+      fechaCreacion: userFound.createdAt,
+      fechaActualizado: userFound.updatedAt,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: [error.message] });
+  }
+});
+
+router.post(
+  "/usuario/deletephoto",
+  authValidar,
+  subirFoto,
+  async (req, res) => {
+    try {
+      const { id } = req.user;
+      const userFound = await prisma.usuarios.findFirst({ where: { id } });
+      if (!userFound) {
+        return res.status(400).json({ message: ["Usuario no encontrado"] });
+      }
+
+      if (userFound.foto == "/uploads/fotoFija.jpg") {
+        return res
+          .status(400)
+          .json({ message: ["No se puede eliminar la foto por defecto"] });
+      } else {
+        await fs.unlink(`./public${userFound.foto}`);
+        await prisma.usuarios.update({
+          data: { foto: `/uploads/fotoFija.jpg` },
+          where: { id },
+        });
+      }
+
+      res.status(200).json({
+        message: ["foto eliminada"],
+      });
+
+      // if (userFound.foto == "/uploads/fotoFija.jpg") {
+      //   await prisma.usuarios.update({
+      //     where: { id },
+      //     data: { foto: `/uploads/${req.file.filename}` },
+      //   });
+      // } else {
+      //   await fs.unlink(`./public${userFound.foto}`);
+      //   await prisma.usuarios.update({
+      //     where: { id },
+      //     data: { foto: `/uploads/${req.file.filename}` },
+      //   });
+      // }
+
+      // res.json({
+      //   message: ["foto eliminada"],
+      //   foto: `${URL_SERVER}/uploads/${req.file.filename}`,
+      // });
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ message: [error.message] });
+    }
+  }
+);
 
 export default router;
